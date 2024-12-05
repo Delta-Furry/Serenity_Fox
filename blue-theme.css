@@ -1,0 +1,44 @@
+/* Estilo para modo daltonismo */
+body {
+  background-color: #e0f7ff;
+  color: #002244;
+}
+
+header {
+  background-color: #005f99;
+  color: white;
+}
+
+nav a {
+  color: #cceeff;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+#toggle-theme {
+  background-color: #004f80;
+  color: white;
+}
+
+#toggle-theme:hover {
+  background-color: #006bb3;
+}
+
+h2 {
+  color: #004f80;
+}
+
+.download-button {
+  background-color: #005f99;
+}
+
+.download-button:hover {
+  background-color: #0077b3;
+}
+
+footer {
+  background-color: #cceeff;
+  color: #002244;
+}

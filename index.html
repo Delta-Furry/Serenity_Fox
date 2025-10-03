@@ -1,75 +1,302 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Serenity Fox</title>
-  <link rel="stylesheet" href="styles.css" id="theme-style">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calendario TikTok – UNEVE</title>
+  <meta name="description" content="Calendario y gestor de actividades para TikTok (UNEVE – Vinculación y Difusión)" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="uneve.png">
+
+  <!-- FullCalendar -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+  <style>
+    :root{
+      --bg: #111; 
+      --panel: #fff;
+      --panel-2: #f5f5f5;
+      --text: #000;
+      --muted: #444;
+      --brand: #f57c00;
+      --ok: #21c07a;
+      --warn: #ffb020;
+      --danger: #ff5f5f;
+      --chip: #ffe0b2;
+      --border: #f57c00;
+    }
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, Arial;
+      background: var(--bg);
+      color: var(--text);
+      position: relative;
+      overflow-x: hidden;
+    }
+    header{
+      padding: 20px;
+      border-bottom: 2px solid var(--brand);
+      background: var(--brand);
+      color: white;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    h1{ margin: 0; font-size: clamp(20px, 3vw, 28px); }
+
+    nav{
+      background: #fff;
+      border-bottom: 2px solid var(--brand);
+      padding: 10px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+    nav a{
+      text-decoration: none;
+      font-weight: 600;
+      color: var(--brand);
+    }
+
+    .wrap{
+      display: grid; gap: 18px; padding: 18px;
+      grid-template-columns: 1.1fr 1fr;
+      position: relative;
+      z-index: 2;
+    }
+    @media (max-width: 900px){
+      .wrap{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: var(--panel);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    }
+
+    .row{ display:flex; gap:12px; flex-wrap: wrap; align-items: center; }
+    .chip{ display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background: var(--chip); color: var(--text); font-size:12px; }
+    .chip .dot{ width:8px; height:8px; border-radius:999px; background: currentColor; opacity:.9; }
+    .status-urgente{ color: var(--danger) !important; }
+    .status-pendiente{ color: var(--warn) !important; }
+    .status-cumplido{ color: var(--ok) !important; }
+
+    .fc-event.status-urgente { background: var(--danger) !important; color:#fff !important; }
+    .fc-event.status-pendiente { background: var(--warn) !important; color:#000 !important; }
+    .fc-event.status-cumplido { background: var(--ok) !important; color:#fff !important; }
+
+    table{ width:100%; border-collapse: collapse; font-size: 14px; }
+    thead th{
+      text-align:left; font-weight:600; font-size:12px; color: var(--muted);
+      padding:10px; border-bottom: 2px solid var(--border); position: sticky; top:0; background: var(--panel);
+    }
+    tbody td{ padding:12px 10px; border-bottom: 1px solid #ddd; vertical-align: top; }
+    tbody tr:hover{ background: rgba(245,124,0,.1); }
+    .col-title{ font-weight:600; }
+
+    #calendar{ --fc-border-color: var(--border); --fc-page-bg-color: transparent; }
+    .fc .fc-toolbar-title{ font-size: 18px; }
+
+    dialog{ border:none; border-radius:12px; padding:0; max-width: 720px; width:95vw; background: var(--panel-2); color:var(--text); }
+    dialog::backdrop{ background: rgba(0,0,0,.6); }
+    .modal-head{ padding:16px; border-bottom: 1px solid var(--border); display:flex; justify-content: space-between; align-items: center; }
+    .modal-body{ padding:16px; }
+    .btn{ background: var(--brand); color:white; border:none; padding:10px 12px; border-radius:8px; font-weight:600; cursor:pointer; }
+    .btn.secondary{ background: #eee; color: var(--text); border:1px solid #ccc; }
+
+    #searchInput{
+      padding:8px 12px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      margin-bottom:12px;
+      width:100%;
+    }
+
+    #bgCanvas{
+      position: fixed;
+      top:0; left:0; width:100%; height:100%;
+      z-index: 0;
+      background: #111;
+    }
+  </style>
 </head>
 <body>
+  <canvas id="bgCanvas"></canvas>
+
   <header>
-    <div class="header-content">
-      <img src="Icono app.png" alt="Logo de Serenity Fox" class="logo">
-      <h1>Serenity Fox</h1>
-    </div>
-    <nav>
-      <a href="#about">Sobre Nosotros</a>
-      <a href="#features">Características</a>
-      <a href="#requirements">Requisitos</a>
-      <a href="#downloads">Descargas</a>
-    </nav>
-    <button id="toggle-theme">Activar Modo Daltonismo</button>
+    <h1>UNEVE – Vinculación y Difusión</h1>
   </header>
 
-  <main>
-    <section id="welcome">
-      <h2>Bienvenido a Serenity Fox</h2>
-      <p>
-        Gracias por elegir Serenity Fox, la aplicación de meditación diseñada para ayudarte a encontrar la calma, reducir el estrés y mejorar tu bienestar general. 
-        Hemos creado esta app con un enfoque inclusivo, pensando en la accesibilidad para todos, especialmente para personas con daltonismo.
-        En este manual, encontrarás todo lo que necesitas saber para aprovechar al máximo Serenity Fox. Desde cómo descargarla, hasta cómo personalizar la app según tus necesidades.
-      </p>
+  <nav>
+    <a href="#">Propuestas HTML</a>
+    <a href="#">Administrar</a>
+  </nav>
+
+  <div class="wrap">
+    <section class="card">
+      <div class="row" style="justify-content: space-between; margin-bottom: 10px;">
+        <div class="row" style="gap:8px">
+          <span class="chip"><span class="dot status-urgente"></span>Urgente</span>
+          <span class="chip"><span class="dot status-pendiente"></span>Pendiente</span>
+          <span class="chip"><span class="dot status-cumplido"></span>Cumplido</span>
+        </div>
+      </div>
+      <div id="calendar"></div>
     </section>
 
-    <section id="about">
-      <h2>¿Qué es Serenity Fox?</h2>
-      <p>
-        Serenity Fox, la aplicación de meditación diseñada para ayudarte a encontrar la calma, reducir el estrés y mejorar tu bienestar general.
-      </p>
+    <section class="card">
+      <h2 style="margin:0 0 10px; font-size:18px; color:var(--brand);">Actividades</h2>
+      <input type="text" id="searchInput" placeholder="🔍 Buscar actividad...">
+      <div style="overflow:auto; max-height: 70vh;">
+        <table id="tabla">
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Sección</th>
+              <th>Fecha</th>
+              <th>Encargadas</th>
+              <th>Estatus</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </section>
+  </div>
 
-    <section id="features">
-      <h2>Características</h2>
-      <ul>
-        <li>🎧 Meditaciones guiadas para principiantes y expertos.</li>
-        <li>⏰ Recordatorios diarios personalizados.</li>
-        <li>🌈 Diseño inclusivo, optimizado para personas con daltonismo.</li>
-        <li>📊 Seguimiento de tu progreso y estadísticas de bienestar.</li>
-      </ul>
-    </section>
+  <script type="application/json" id="eventData">
+  {
+    "items": [
+      {
+        "id": "evt-001",
+        "titulo": "Invitación al equipo de TikTok",
+        "seccion": "Actividades culturales",
+        "descripcion": "Video de invitación para formar parte del equipo de TikTok y servicio social.",
+        "fechaCalendario": "2025-09-20",
+        "encargadas": ["David"],
+        "estatus": "Cumplido",
+        "nota": "Entrega antes de las 12:00 de la noche.",
+        "linkTikTok": "https://www.tiktok.com/embed/1234567890" 
+      }
+    ]
+  }
+  </script>
 
-    <section id="requirements">
-      <h2>Requisitos del Sistema</h2>
-      <ul>
-        <li><strong>Android:</strong> Versión 7.0 o superior</li>
-        <li><strong>iOS:</strong> No disponible</li>
-        <li><strong>Espacio libre en el dispositivo:</strong> 100 MB</li>
-      </ul>
-    </section>
+  <script>
+    const $$ = (q, el=document) => el.querySelector(q);
+    const fmt = (d) => {
+      if(!d) return '';
+      const fixed = new Date(d + "T00:00:00");
+      return fixed.toLocaleDateString('es-MX',{ year:'numeric', month:'short', day:'2-digit'});
+    };
 
-    <section id="downloads">
-      <h2>Descargas</h2>
-      <img src="qrr.png" alt="Escanea el código QR para descargar Serenity Fox" class="qr-code">
-      <a href="https://drive.google.com/uc?export=download&id=1272p7HCZgqsNDXzeBYJVuY9bdIVGQuZu" class="download-button">Descargar aquí</a>
-    </section>
-  </main>
+    let data = JSON.parse($$('#eventData').textContent.trim());
+    const ITEMS = data.items;
 
-  <footer>
-    <p>&copy; 2024 Serenity Fox. Todos los derechos reservados.</p>
-    <p>Contacto: <a href="mailto:serenityfox.soporte@gmail.com">serenityfox.soporte@gmail.com</a></p>
-  </footer>
+    document.addEventListener('DOMContentLoaded', function() {
+      const calendarEl = document.getElementById('calendar');
+      const events = ITEMS.map(i => ({
+        id: i.id,
+        title: i.titulo,
+        start: i.fechaCalendario,
+        extendedProps: i,
+        classNames: [i.estatus === 'Urgente' ? 'status-urgente' : i.estatus === 'Cumplido' ? 'status-cumplido' : 'status-pendiente']
+      }));
 
-  <script src="script.js"></script>
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        locale: 'es',
+        initialView: 'dayGridMonth',
+        events,
+        eventClick: function(info){ openModal(info.event.extendedProps); }
+      });
+      calendar.render();
+      renderTable();
+    });
+
+    function renderTable(){
+      const tbody = $$('#tabla tbody');
+      tbody.innerHTML = '';
+      ITEMS.forEach(it => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="col-title">${it.titulo}</td>
+          <td>${it.seccion}</td>
+          <td>${fmt(it.fechaCalendario)}</td>
+          <td>${(it.encargadas||[]).map(p=>`<span class="chip">${p}</span>`).join(' ')}</td>
+          <td class="${it.estatus==='Urgente'?'status-urgente':it.estatus==='Cumplido'?'status-cumplido':'status-pendiente'}">${it.estatus}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModal(it){
+      let dlg = document.querySelector('dialog');
+      if(!dlg){
+        dlg = document.createElement('dialog');
+        dlg.innerHTML = `
+          <div class="modal-head">
+            <h3 id="m-title" style="margin:0;"></h3>
+            <button class="btn secondary" onclick="this.closest('dialog').close()">Cerrar</button>
+          </div>
+          <div class="modal-body" id="m-body"></div>
+        `;
+        document.body.appendChild(dlg);
+      }
+      $$('#m-title', dlg).textContent = it.titulo;
+      $$('#m-body', dlg).innerHTML = `
+        <p><b>Sección:</b> ${it.seccion}</p>
+        <p>${it.descripcion||''}</p>
+        <p><b>Fecha:</b> ${fmt(it.fechaCalendario)}</p>
+        <p><b>Encargadas:</b> ${(it.encargadas||[]).join(', ')}</p>
+        <p><b>Estatus:</b> ${it.estatus}</p>
+        <p><b>Nota:</b> ${it.nota||''}</p>
+        ${it.linkTikTok ? `<iframe src="${it.linkTikTok}" width="100%" height="480" frameborder="0" allowfullscreen></iframe>` : ""}
+      `;
+      dlg.showModal();
+    }
+
+    $$('#searchInput').addEventListener('input', e => {
+      const filter = e.target.value.toLowerCase();
+      document.querySelectorAll('#tabla tbody tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+      });
+    });
+
+    // Fondo animado
+    const canvas = document.getElementById("bgCanvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+    function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+    window.addEventListener("resize", resize); resize();
+    for(let i=0;i<50;i++){
+      particles.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: Math.random()*3+1,
+        dx: (Math.random()-0.5)*0.5,
+        dy: (Math.random()-0.5)*0.5,
+        color: Math.random()>0.5 ? "#f57c00" : "#fff"
+      });
+    }
+    function animate(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p=>{
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=p.color;
+        ctx.fill();
+        p.x+=p.dx; p.y+=p.dy;
+        if(p.x<0||p.x>canvas.width) p.dx*=-1;
+        if(p.y<0||p.y>canvas.height) p.dy*=-1;
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
 </body>
 </html>

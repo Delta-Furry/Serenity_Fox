@@ -13,6 +13,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
+  <!-- TikTok embed -->
+  <script async src="https://www.tiktok.com/embed.js"></script>
+
   <style>
     :root{
       --bg: #111; 
@@ -27,107 +30,41 @@
       --chip: #ffe0b2;
       --border: #f57c00;
     }
-    *{ box-sizing: border-box; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, Arial;
-      background: var(--bg);
-      color: var(--text);
-      position: relative;
-      overflow-x: hidden;
-    }
-    header{
-      padding: 20px;
-      border-bottom: 2px solid var(--brand);
-      background: var(--brand);
-      color: white;
-      text-align: center;
-      position: relative;
-      z-index: 2;
-    }
-    h1{ margin: 0; font-size: clamp(20px, 3vw, 28px); }
+    body{ margin:0; font-family: Arial, sans-serif; background: var(--bg); color: var(--text); }
+    header{ padding: 20px; border-bottom: 2px solid var(--brand); background: var(--brand); color: white; text-align: center; }
+    nav{ background:#fff; border-bottom:2px solid var(--brand); padding:10px; display:flex; gap:20px; justify-content:center; }
+    nav a{ text-decoration:none; font-weight:600; color:var(--brand); }
 
-    nav{
-      background: #fff;
-      border-bottom: 2px solid var(--brand);
-      padding: 10px;
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-    }
-    nav a{
-      text-decoration: none;
-      font-weight: 600;
-      color: var(--brand);
-    }
+    .wrap{ display:grid; gap:18px; padding:18px; grid-template-columns:1.1fr 1fr; }
+    @media(max-width:900px){ .wrap{ grid-template-columns:1fr; } }
 
-    .wrap{
-      display: grid; gap: 18px; padding: 18px;
-      grid-template-columns: 1.1fr 1fr;
-      position: relative;
-      z-index: 2;
-    }
-    @media (max-width: 900px){
-      .wrap{ grid-template-columns: 1fr; }
-    }
+    .card{ background: var(--panel); border:2px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 4px 12px rgba(0,0,0,.2); }
 
-    .card{
-      background: var(--panel);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.2);
-    }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .chip{ display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background: var(--chip); font-size:12px; }
+    .status-urgente{ color: var(--danger); }
+    .status-pendiente{ color: var(--warn); }
+    .status-cumplido{ color: var(--ok); }
 
-    .row{ display:flex; gap:12px; flex-wrap: wrap; align-items: center; }
-    .chip{ display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background: var(--chip); color: var(--text); font-size:12px; }
-    .chip .dot{ width:8px; height:8px; border-radius:999px; background: currentColor; opacity:.9; }
-    .status-urgente{ color: var(--danger) !important; }
-    .status-pendiente{ color: var(--warn) !important; }
-    .status-cumplido{ color: var(--ok) !important; }
-
-    .fc-event.status-urgente { background: var(--danger) !important; color:#fff !important; }
-    .fc-event.status-pendiente { background: var(--warn) !important; color:#000 !important; }
-    .fc-event.status-cumplido { background: var(--ok) !important; color:#fff !important; }
-
-    table{ width:100%; border-collapse: collapse; font-size: 14px; }
-    thead th{
-      text-align:left; font-weight:600; font-size:12px; color: var(--muted);
-      padding:10px; border-bottom: 2px solid var(--border); position: sticky; top:0; background: var(--panel);
-    }
-    tbody td{ padding:12px 10px; border-bottom: 1px solid #ddd; vertical-align: top; }
+    table{ width:100%; border-collapse:collapse; font-size:14px; }
+    thead th{ text-align:left; font-weight:600; font-size:12px; color:var(--muted); padding:10px; border-bottom:2px solid var(--border); }
+    tbody td{ padding:12px 10px; border-bottom:1px solid #ddd; }
     tbody tr:hover{ background: rgba(245,124,0,.1); }
-    .col-title{ font-weight:600; }
 
-    #calendar{ --fc-border-color: var(--border); --fc-page-bg-color: transparent; }
-    .fc .fc-toolbar-title{ font-size: 18px; }
+    #calendar{ --fc-border-color: var(--border); }
+    .fc .fc-toolbar-title{ font-size:18px; }
 
-    dialog{ border:none; border-radius:12px; padding:0; max-width: 720px; width:95vw; background: var(--panel-2); color:var(--text); }
+    dialog{ border:none; border-radius:12px; max-width:720px; width:95vw; background: var(--panel-2); }
     dialog::backdrop{ background: rgba(0,0,0,.6); }
-    .modal-head{ padding:16px; border-bottom: 1px solid var(--border); display:flex; justify-content: space-between; align-items: center; }
+    .modal-head{ padding:16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
     .modal-body{ padding:16px; }
-    .btn{ background: var(--brand); color:white; border:none; padding:10px 12px; border-radius:8px; font-weight:600; cursor:pointer; }
-    .btn.secondary{ background: #eee; color: var(--text); border:1px solid #ccc; }
+    .btn{ background:var(--brand); color:white; border:none; padding:10px 12px; border-radius:8px; font-weight:600; cursor:pointer; }
+    .btn.secondary{ background:#eee; color:var(--text); border:1px solid #ccc; }
 
-    #searchInput{
-      padding:8px 12px;
-      border:1px solid #ccc;
-      border-radius:8px;
-      margin-bottom:12px;
-      width:100%;
-    }
-
-    #bgCanvas{
-      position: fixed;
-      top:0; left:0; width:100%; height:100%;
-      z-index: 0;
-      background: #111;
-    }
+    #searchInput{ padding:8px 12px; border:1px solid #ccc; border-radius:8px; margin-bottom:12px; width:100%; }
   </style>
 </head>
 <body>
-  <canvas id="bgCanvas"></canvas>
-
   <header>
     <h1>UNEVE – Vinculación y Difusión</h1>
   </header>
@@ -141,9 +78,9 @@
     <section class="card">
       <div class="row" style="justify-content: space-between; margin-bottom: 10px;">
         <div class="row" style="gap:8px">
-          <span class="chip"><span class="dot status-urgente"></span>Urgente</span>
-          <span class="chip"><span class="dot status-pendiente"></span>Pendiente</span>
-          <span class="chip"><span class="dot status-cumplido"></span>Cumplido</span>
+          <span class="chip status-urgente">Urgente</span>
+          <span class="chip status-pendiente">Pendiente</span>
+          <span class="chip status-cumplido">Cumplido</span>
         </div>
       </div>
       <div id="calendar"></div>
@@ -181,7 +118,7 @@
         "encargadas": ["David"],
         "estatus": "Cumplido",
         "nota": "Entrega antes de las 12:00 de la noche.",
-        "linkTikTok": "https://vt.tiktok.com/ZSU1VSU34/" 
+        "linkTikTok": "https://vt.tiktok.com/ZSU1VSU34/"
       }
     ]
   }
@@ -189,17 +126,12 @@
 
   <script>
     const $$ = (q, el=document) => el.querySelector(q);
-    const fmt = (d) => {
-      if(!d) return '';
-      const fixed = new Date(d + "T00:00:00");
-      return fixed.toLocaleDateString('es-MX',{ year:'numeric', month:'short', day:'2-digit'});
-    };
+    const fmt = d => d ? new Date(d+"T00:00:00").toLocaleDateString('es-MX',{ year:'numeric', month:'short', day:'2-digit'}) : '';
 
     let data = JSON.parse($$('#eventData').textContent.trim());
     const ITEMS = data.items;
 
     document.addEventListener('DOMContentLoaded', function() {
-      const calendarEl = document.getElementById('calendar');
       const events = ITEMS.map(i => ({
         id: i.id,
         title: i.titulo,
@@ -207,8 +139,7 @@
         extendedProps: i,
         classNames: [i.estatus === 'Urgente' ? 'status-urgente' : i.estatus === 'Cumplido' ? 'status-cumplido' : 'status-pendiente']
       }));
-
-      const calendar = new FullCalendar.Calendar(calendarEl, {
+      const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
         locale: 'es',
         initialView: 'dayGridMonth',
         events,
@@ -224,7 +155,7 @@
       ITEMS.forEach(it => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td class="col-title">${it.titulo}</td>
+          <td>${it.titulo}</td>
           <td>${it.seccion}</td>
           <td>${fmt(it.fechaCalendario)}</td>
           <td>${(it.encargadas||[]).map(p=>`<span class="chip">${p}</span>`).join(' ')}</td>
@@ -255,9 +186,14 @@
         <p><b>Encargadas:</b> ${(it.encargadas||[]).join(', ')}</p>
         <p><b>Estatus:</b> ${it.estatus}</p>
         <p><b>Nota:</b> ${it.nota||''}</p>
-        ${it.linkTikTok ? `<iframe src="${it.linkTikTok}" width="100%" height="480" frameborder="0" allowfullscreen></iframe>` : ""}
+        ${it.linkTikTok ? `
+          <blockquote class="tiktok-embed" cite="${it.linkTikTok}" data-video-id="" style="max-width: 605px;min-width: 325px;">
+            <section></section>
+          </blockquote>` : ""}
       `;
       dlg.showModal();
+      // Forzar que TikTok reprocese los nuevos embeds
+      if(window.tiktokEmbedLoad) window.tiktokEmbedLoad();
     }
 
     $$('#searchInput').addEventListener('input', e => {
@@ -266,37 +202,6 @@
         row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
       });
     });
-
-    // Fondo animado
-    const canvas = document.getElementById("bgCanvas");
-    const ctx = canvas.getContext("2d");
-    let particles = [];
-    function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
-    window.addEventListener("resize", resize); resize();
-    for(let i=0;i<50;i++){
-      particles.push({
-        x: Math.random()*canvas.width,
-        y: Math.random()*canvas.height,
-        r: Math.random()*3+1,
-        dx: (Math.random()-0.5)*0.5,
-        dy: (Math.random()-0.5)*0.5,
-        color: Math.random()>0.5 ? "#f57c00" : "#fff"
-      });
-    }
-    function animate(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      particles.forEach(p=>{
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fillStyle=p.color;
-        ctx.fill();
-        p.x+=p.dx; p.y+=p.dy;
-        if(p.x<0||p.x>canvas.width) p.dx*=-1;
-        if(p.y<0||p.y>canvas.height) p.dy*=-1;
-      });
-      requestAnimationFrame(animate);
-    }
-    animate();
   </script>
 </body>
 </html>

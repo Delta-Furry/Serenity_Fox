@@ -1,350 +1,130 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calendario TikTok – UNEVE</title>
-  <meta name="description" content="Calendario y gestor de actividades para TikTok (UNEVE – Vinculación y Difusión)" />
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="uneve.png">
-
-  <!-- FullCalendar -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario UNEVE - Vinculación y Difusión</title>
+  <link rel="icon" type="image/jpg" href="uneve.jpg">
   <style>
-    :root{
-      --bg: #111; 
-      --panel: #fff;
-      --panel-2: #f5f5f5;
-      --text: #000;
-      --muted: #444;
-      --brand: #f57c00; /* naranja UNEVE */
-      --ok: #21c07a;
-      --warn: #ffb020;
-      --danger: #ff5f5f;
-      --chip: #ffe0b2;
-      --border: #f57c00;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #fff8f0;
+      color: #333;
     }
-    *{ box-sizing: border-box; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-      background: var(--bg);
-      color: var(--text);
-      position: relative;
-      overflow-x: hidden;
-    }
-    header{
-      padding: 20px;
-      border-bottom: 2px solid var(--brand);
-      background: var(--brand);
+    header {
+      background: #f37021;
       color: white;
+      padding: 15px;
       text-align: center;
-      position: relative;
-      z-index: 2;
     }
-    h1{ margin: 0; font-size: clamp(20px, 3vw, 28px); }
-
-    .wrap{
-      display: grid; gap: 18px; padding: 18px;
-      grid-template-columns: 1.1fr 1fr;
-      position: relative;
-      z-index: 2;
+    h1, h2 {
+      margin: 5px 0;
     }
-    @media (max-width: 900px){
-      .wrap{ grid-template-columns: 1fr; }
+    .container {
+      padding: 20px;
     }
-
-    .card{
-      background: var(--panel);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    .event-menu {
+      margin-bottom: 20px;
     }
-
-    .row{ display:flex; gap:12px; flex-wrap: wrap; align-items: center; }
-    .chip{ display:inline-flex; align-items:center; gap:6px; padding:4px 8px; border-radius:999px; background: var(--chip); color: var(--text); font-size:12px; }
-    .chip .dot{ width:8px; height:8px; border-radius:999px; background: currentColor; opacity:.9; }
-    .status-urgente{ color: var(--danger) !important; }
-    .status-pendiente{ color: var(--warn) !important; }
-    .status-cumplido{ color: var(--ok) !important; }
-
-    /* colores en calendario */
-    .fc-event.status-urgente { background: var(--danger) !important; border: none !important; color:#fff !important; }
-    .fc-event.status-pendiente { background: var(--warn) !important; border: none !important; color:#000 !important; }
-    .fc-event.status-cumplido { background: var(--ok) !important; border: none !important; color:#fff !important; }
-
-    table{ width:100%; border-collapse: collapse; font-size: 14px; }
-    thead th{
-      text-align:left; font-weight:600; font-size:12px; color: var(--muted);
-      padding:10px; border-bottom: 2px solid var(--border); position: sticky; top:0; background: var(--panel);
+    select {
+      padding: 8px;
+      font-size: 16px;
     }
-    tbody td{ padding:12px 10px; border-bottom: 1px solid #ddd; vertical-align: top; }
-    tbody tr:hover{ background: rgba(245,124,0,.1); }
-    .col-title{ font-weight:600; }
-
-    #calendar{ --fc-border-color: var(--border); --fc-page-bg-color: transparent; }
-    .fc .fc-toolbar-title{ font-size: 18px; }
-
-    dialog{ border:none; border-radius:12px; padding:0; max-width: 720px; width:95vw; background: var(--panel-2); color:var(--text); }
-    dialog::backdrop{ background: rgba(0,0,0,.6); }
-    .modal-head{ padding:16px; border-bottom: 1px solid var(--border); display:flex; justify-content: space-between; align-items: center; }
-    .modal-body{ padding:16px; }
-    .btn{ background: var(--brand); color:white; border:none; padding:10px 12px; border-radius:8px; font-weight:600; cursor:pointer; transition:0.3s; }
-    .btn:hover{ opacity:0.9; }
-    .btn.secondary{ background: #eee; color: var(--text); border:1px solid #ccc; }
-
-    /* Input buscador */
-    #searchInput{
-      padding:8px 12px;
-      border:1px solid #ccc;
-      border-radius:8px;
-      margin-bottom:12px;
-      width:100%;
-    }
-
-    /* Fondo animado */
-    #bgCanvas{
-      position: fixed;
-      top:0; left:0; width:100%; height:100%;
-      z-index: 0;
-      background: #111;
-    }
-
-    /* Botón secreto */
-    #secretBtn{
-      position: fixed;
-      bottom: 12px; right: 12px;
-      width: 16px; height: 16px;
-      border-radius: 50%;
+    .event-detail {
       background: white;
-      cursor: pointer;
-      z-index: 5;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
     }
-    #secretMenu{
-      position: fixed;
-      bottom: 40px; right: 12px;
-      background: var(--panel);
-      border: 2px solid var(--brand);
-      border-radius: 12px;
-      padding: 16px;
-      width: 280px;
-      display: none;
-      z-index: 10;
-      font-size: 13px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    .event-detail p {
+      margin: 5px 0;
     }
-
-    /* Botones principales */
-    .top-buttons{
-      display:flex;
-      gap:10px;
-      margin:10px 0 20px;
+    iframe {
+      margin-top: 15px;
+      width: 100%;
+      max-width: 325px;
+      height: 580px;
+      border: none;
+      border-radius: 10px;
+    }
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: gray;
+      margin-top: 20px;
+      padding: 10px;
     }
   </style>
 </head>
 <body>
-  <canvas id="bgCanvas"></canvas>
-
   <header>
-    <h1>UNEVE – Vinculación y Difusión</h1>
+    <h1>Calendario UNEVE</h1>
+    <h2>Vinculación y Difusión</h2>
   </header>
 
-  <div class="wrap">
-    <section class="card">
-      <!-- Botones discretos -->
-      <div class="top-buttons">
-        <button class="btn" onclick="alert('Acceso Administrador')">Administrador</button>
-        <button class="btn secondary" onclick="alert('Ver propuestas')">Propuestas</button>
-      </div>
+  <div class="container">
+    <div class="event-menu">
+      <label for="eventSelect"><b>Selecciona un evento:</b></label>
+      <select id="eventSelect" onchange="showEvent(this.value)">
+        <option value="">-- Elige un evento --</option>
+        <option value="evt-001">Revelación de la estatua</option>
+      </select>
+    </div>
 
-      <div class="row" style="justify-content: space-between; margin-bottom: 10px;">
-        <div class="row" style="gap:8px">
-          <span class="chip"><span class="dot status-urgente"></span>Urgente</span>
-          <span class="chip"><span class="dot status-pendiente"></span>Pendiente</span>
-          <span class="chip"><span class="dot status-cumplido"></span>Cumplido</span>
-        </div>
-      </div>
-      <div id="calendar"></div>
-    </section>
-
-    <section class="card">
-      <h2 style="margin:0 0 10px; font-size:18px; color:var(--brand);">Actividades</h2>
-      <input type="text" id="searchInput" placeholder="🔍 Buscar actividad...">
-      <div style="overflow:auto; max-height: 60vh;">
-        <table id="tabla">
-          <thead>
-            <tr>
-              <th>Título</th>
-              <th>Sección</th>
-              <th>Fecha</th>
-              <th>Se deja</th>
-              <th>Se realiza</th>
-              <th>Se entrega</th>
-              <th>Encargadas</th>
-              <th>Estatus</th>
-              <th>Nota</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <!-- Video TikTok -->
-      <h3 style="margin:20px 0 10px; font-size:16px; color:var(--brand);">Video TikTok</h3>
-      <div style="position:relative; padding-top:56.25%; border-radius:12px; overflow:hidden;">
-        <iframe src="https://www.tiktok.com/embed/v2/ZSU1VSU34" 
-          frameborder="0" allowfullscreen 
-          style="position:absolute;top:0;left:0;width:100%;height:100%;">
-        </iframe>
-      </div>
-    </section>
+    <div id="eventDetail" class="event-detail" style="display:none;">
+      <!-- Aquí se cargan los detalles del evento -->
+    </div>
   </div>
 
-  <!-- Secreto -->
-  <div id="secretBtn"></div>
-  <div id="secretMenu">
-    <p><b>Hecho por:</b><br> Chávez Vázquez</p>
-    <p>Estudiante de ICM – Octavo semestre</p>
-    <p><i>Agradesco al Lic. Roberto Melo y Janet Zacarías por esta oportunidad. ¡Lo daré todo!</i></p>
-    <p>Encontraste este secreto Felicidades UwUr hasmelo saber al 5567382862</p>
-    <button class="btn secondary" onclick="document.getElementById('secretMenu').style.display='none'">Cerrar</button>
-  </div>
-
-  <!-- =========================
-       EVENTOS JSON (EDITABLE)
-       ========================= -->
-  <script type="application/json" id="eventData">
-  {
-    "personas": ["Paola","Ibi","Vivian","Evelyn","Adriana","David"],
-    "secciones": ["Eventos institucionales","Tips escolares","Motivacionales","Biblioteca","Actividades culturales","Opiniones / Egresados","Talleres y directores"],
-    "items": []
-  }
-  </script>
+  <footer>
+    &copy; 2025 UNEVE - Área de Vinculación y Difusión
+  </footer>
 
   <script>
-    const $$ = (q, el=document) => el.querySelector(q);
-    const fmt = (d) => {
-      if(!d) return '';
-      const fixed = new Date(d + "T00:00:00"); 
-      return fixed.toLocaleDateString('es-MX',{ year:'numeric', month:'short', day:'2-digit'});
+    // 🔸 LISTA DE EVENTOS (Aquí solo editas o agregas más eventos)
+    const eventos = {
+      "evt-001": {
+        "titulo": "Revelación de la estatua del zorro",
+        "seccion": "Eventos institucionales",
+        "descripcion": "Cobertura del evento de la revelación de la estatua de la mascota de la universidad.",
+        "fechaCalendario": "2025-08-28",
+        "seDeja": "2025-08-27",
+        "seRealiza": "2025-08-28",
+        "seEntrega": "2025-08-30",
+        "encargadas": ["Ive", "Vivian"],
+        "estatus": "Pendiente",
+        "nota": "El evento inicia a las 12:00 pm, cubrir con TikToks para redes.",
+        // 🔗 Aquí va el link del video TikTok
+        "video": "https://www.tiktok.com/embed/7402780810329095467"
+      }
     };
 
-    let data = JSON.parse($$('#eventData').textContent.trim());
-    const ITEMS = data.items;
-
-    document.addEventListener('DOMContentLoaded', function() {
-      const calendarEl = document.getElementById('calendar');
-      const events = ITEMS.map(i => ({
-        id: i.id,
-        title: i.titulo,
-        start: i.fechaCalendario,
-        extendedProps: i,
-        classNames: [i.estatus === 'Urgente' ? 'status-urgente' : i.estatus === 'Cumplido' ? 'status-cumplido' : 'status-pendiente']
-      }));
-
-      const calendar = new FullCalendar.Calendar(calendarEl, {
-        locale: 'es',
-        initialView: 'dayGridMonth',
-        events,
-        eventClick: function(info){ openModal(info.event.extendedProps); }
-      });
-      calendar.render();
-      renderTable();
-    });
-
-    function renderTable(){
-      const tbody = $$('#tabla tbody');
-      tbody.innerHTML = '';
-      ITEMS.forEach(it => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="col-title">${it.titulo}</td>
-          <td>${it.seccion}</td>
-          <td>${fmt(it.fechaCalendario)}</td>
-          <td>${fmt(it.seDeja)}</td>
-          <td>${fmt(it.seRealiza)}</td>
-          <td>${fmt(it.seEntrega)}</td>
-          <td>${(it.encargadas||[]).map(p=>`<span class="chip">${p}</span>`).join(' ')}</td>
-          <td class="${it.estatus==='Urgente'?'status-urgente':it.estatus==='Cumplido'?'status-cumplido':'status-pendiente'}">${it.estatus}</td>
-          <td>${it.nota||''}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function openModal(it){
-      let dlg = document.querySelector('dialog');
-      if(!dlg){
-        dlg = document.createElement('dialog');
-        dlg.innerHTML = `
-          <div class="modal-head">
-            <h3 id="m-title" style="margin:0;"></h3>
-            <button class="btn secondary" onclick="this.closest('dialog').close()">Cerrar</button>
-          </div>
-          <div class="modal-body" id="m-body"></div>
-        `;
-        document.body.appendChild(dlg);
+    // 🔸 Función para mostrar el evento seleccionado
+    function showEvent(eventId) {
+      const detailDiv = document.getElementById("eventDetail");
+      if (!eventId || !eventos[eventId]) {
+        detailDiv.style.display = "none";
+        detailDiv.innerHTML = "";
+        return;
       }
-      $$('#m-title', dlg).textContent = it.titulo;
-      $$('#m-body', dlg).innerHTML = `
-        <p><b>Sección:</b> ${it.seccion}</p>
-        <p>${it.descripcion||''}</p>
-        <p><b>Fecha:</b> ${fmt(it.fechaCalendario)}</p>
-        <p><b>Encargadas:</b> ${(it.encargadas||[]).join(', ')}</p>
-        <p><b>Estatus:</b> ${it.estatus}</p>
-        <p><b>Nota:</b> ${it.nota||''}</p>
+      const e = eventos[eventId];
+      detailDiv.style.display = "block";
+      detailDiv.innerHTML = `
+        <h3>${e.titulo}</h3>
+        <p><b>Sección:</b> ${e.seccion}</p>
+        <p><b>Descripción:</b> ${e.descripcion}</p>
+        <p><b>Fecha calendario:</b> ${e.fechaCalendario}</p>
+        <p><b>Se deja:</b> ${e.seDeja}</p>
+        <p><b>Se realiza:</b> ${e.seRealiza}</p>
+        <p><b>Se entrega:</b> ${e.seEntrega}</p>
+        <p><b>Encargadas:</b> ${e.encargadas.join(", ")}</p>
+        <p><b>Estatus:</b> ${e.estatus}</p>
+        <p><b>Nota:</b> ${e.nota}</p>
+        <h4>Video del evento</h4>
+        <iframe src="${e.video}" allowfullscreen></iframe>
       `;
-      dlg.showModal();
     }
-
-    // Buscador simple
-    $$('#searchInput').addEventListener('input', e => {
-      const filter = e.target.value.toLowerCase();
-      document.querySelectorAll('#tabla tbody tr').forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
-      });
-    });
-
-    // Fondo animado
-    const canvas = document.getElementById("bgCanvas");
-    const ctx = canvas.getContext("2d");
-    let particles = [];
-    function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
-    window.addEventListener("resize", resize); resize();
-
-    for(let i=0;i<50;i++){
-      particles.push({
-        x: Math.random()*canvas.width,
-        y: Math.random()*canvas.height,
-        r: Math.random()*3+1,
-        dx: (Math.random()-0.5)*0.5,
-        dy: (Math.random()-0.5)*0.5,
-        color: Math.random()>0.5 ? "#f57c00" : "#fff"
-      });
-    }
-    function animate(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      particles.forEach(p=>{
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fillStyle=p.color;
-        ctx.fill();
-        p.x+=p.dx; p.y+=p.dy;
-        if(p.x<0||p.x>canvas.width) p.dx*=-1;
-        if(p.y<0||p.y>canvas.height) p.dy*=-1;
-      });
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-    // Botón secreto
-    document.getElementById("secretBtn").addEventListener("click", () => {
-      document.getElementById("secretMenu").style.display = "block";
-    });
   </script>
 </body>
 </html>
